@@ -1,0 +1,301 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ------------------------------
+// Модель пользователя
+// ------------------------------
+model User {
+  id            String    @id @default(cuid())
+  name          String?   @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  emailVerified DateTime? @map("email_verified")
+  image         String?   @db.VarChar(255)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  accounts      Account[]
+  sessions      Session[]
+  authenticators Authenticator[]
+
+  // Связи с созданными записями
+  wishes        Wish[]
+  reminders     Reminder[]
+  shoppingItems ShoppingItem[]
+  trips         Trip[]
+  habits        Habit[]
+  habitRecords  HabitRecord[]
+  memories      Memory[]
+  budgetEntries BudgetEntry[]
+  notes         Note[]
+  movieItems    MovieItem[]
+  sharedAccess  SharedAccess[] // где этот пользователь выступает как участник совместного доступа
+
+
+  @@map("users")
+}
+
+// ------------------------------
+// Модель для авторизации
+// ------------------------------
+model Account { 
+  id                String  @id @default(cuid()) 
+  userId            String  @map("user_id") 
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id") 
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  @@unique([provider, providerAccountId]) 
+  @@map("accounts") 
+} 
+model Session { 
+  id           String   @id @default(cuid()) 
+  sessionToken String   @unique @map("session_token") 
+  userId       String   @map("user_id") 
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  @@map("sessions") 
+}
+model VerificationToken { 
+  identifier String
+  token      String
+  expires    DateTime
+  @@unique([identifier, token]) 
+  @@map("verification_tokens") 
+} 
+
+model Authenticator {
+  credentialID         String  @unique @map("_id")
+  userId               String  @map("user_id") 
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, credentialID])
+}
+
+// ------------------------------
+// Совместный доступ (многие-ко-многим)
+// ------------------------------
+model SharedAccess {
+  id         String   @id @default(cuid())
+  entityType String   @db.VarChar(50)  // 'wish', 'reminder', 'shopping', 'trip', 'habit', 'memory', 'budget', 'note', 'movie'
+  entityId   String   @db.VarChar(255) // ID соответствующей записи
+  userId     String   @db.VarChar(255)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       String?  @db.VarChar(20)  // 'editor' или 'viewer' (опционально)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([entityType, entityId, userId])
+  @@index([entityType, entityId])
+  @@map("shared_access")
+}
+
+// ------------------------------
+// Список желаний
+// ------------------------------
+model Wish {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  link        String?  @db.VarChar(500) // ссылка на товар
+  price       Decimal?   @db.Decimal(10, 2)
+  priority    Int?     @db.TinyInt     // 1-5
+  isPurchased Boolean  @default(false) @map("is_purchased")
+  purchasedAt DateTime? @map("purchased_at")
+  image       String?  @db.VarChar(255)
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("wishes")
+}
+
+// ------------------------------
+// Напоминания
+// ------------------------------
+model Reminder {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  dueDate     DateTime? @map("due_date")
+  isCompleted Boolean  @default(false) @map("is_completed")
+  completedAt DateTime? @map("completed_at")
+  isRecurring Boolean  @default(false) @map("is_recurring")
+  recurringRule String? @db.VarChar(50) @map("recurring_rule") // 'daily', 'weekly', 'monthly'
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("reminders")
+}
+
+// ------------------------------
+// Запланированные покупки для дома
+// ------------------------------
+model ShoppingItem {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  category    String?  @db.VarChar(100) // например, 'Продукты', 'Бытовая химия'
+  quantity    Int?     @default(1)
+  price       Decimal?   @db.Decimal(10, 2)
+  isPurchased Boolean  @default(false) @map("is_purchased")
+  purchasedAt DateTime? @map("purchased_at")
+  note        String?  @db.Text
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("shopping_items")
+}
+
+// ------------------------------
+// Поездки
+// ------------------------------
+model Trip {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255) // например, 'Отдых в Сочи'
+  destination String?  @db.VarChar(255)
+  startDate   DateTime? @map("start_date")
+  endDate     DateTime? @map("end_date")
+  budget      Decimal?   @db.Decimal(10, 2)
+  notes       String?  @db.Text          // ссылки на билеты, отели, маршрут
+  image       String?  @db.VarChar(255)  // основное фото
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Можно добавить чек-лист вещей отдельной моделью, но пока оставим в notes
+
+  @@map("trips")
+}
+
+// ------------------------------
+// Привычки (личные и совместные)
+// ------------------------------
+model Habit {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  icon        String?  @db.VarChar(50)  // название иконки из Lucide
+  color       String?  @db.VarChar(7)   // цвет в HEX, например #6366f1
+  frequency   String   @db.VarChar(20)  // 'daily', 'weekly', 'monthly'
+  isShared    Boolean  @default(false) @map("is_shared") // если true – видна обоим (через SharedAccess)
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  records     HabitRecord[]
+
+  @@map("habits")
+}
+
+// Отметки выполнения привычек (по дням)
+model HabitRecord {
+  id         String   @id @default(cuid())
+  habitId    String   @map("habit_id")
+  habit      Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  userId     String   @map("user_id")   // кто отметил (для совместной может отмечать любой)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date       DateTime @default(now()) @map("record_date") // дата отметки (обычно сегодня)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@unique([habitId, userId, date])
+  @@map("habit_records")
+}
+
+// ------------------------------
+// Галерея воспоминаний
+// ------------------------------
+model Memory {
+  id          String   @id @default(cuid())
+  title       String?  @db.VarChar(255)
+  description String?  @db.Text
+  image       String   @db.VarChar(255) // URL изображения
+  date        DateTime? // дата события (если указана)
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("memories")
+}
+
+// ------------------------------
+// Совместный бюджет
+// ------------------------------
+model BudgetEntry {
+  id          String   @id @default(cuid())
+  type        String   @db.VarChar(10)   // 'income' или 'expense'
+  amount      Decimal    @db.Decimal(10, 2)
+  category    String   @db.VarChar(100)  // 'Продукты', 'Транспорт', 'Зарплата' и т.д.
+  description String?  @db.Text
+  date        DateTime @default(now())
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("budget_entries")
+}
+
+// ------------------------------
+// Заметки (общие текстовые)
+// ------------------------------
+model Note {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  content     String?  @db.Text
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("notes")
+}
+
+// ------------------------------
+// Список фильмов/сериалов/книг
+// ------------------------------
+model MovieItem {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  type        String   @db.VarChar(20)   // 'film', 'series', 'book'
+  status      String   @db.VarChar(20)   // 'planned', 'watching', 'finished', 'abandoned'
+  rating      Int?     @db.TinyInt       // 1-10
+  comment     String?  @db.Text
+  link        String?  @db.VarChar(500)
+  createdBy   String   @map("created_by")
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("movie_items")
+}
