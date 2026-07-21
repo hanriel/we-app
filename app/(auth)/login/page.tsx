@@ -59,7 +59,6 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        // Если пользователь отменил операцию в браузере
         if (result.error.includes("WebAuthnTriggers")) {
           setError("Вход отменен или устройство не поддерживает Passkey.");
         } else {
@@ -83,12 +82,11 @@ export default function LoginPage() {
               src="/icons/logo-transparent.png"
               width={192}
               height={192}
-              alt="logo"
+              alt="WE"
             />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Форма email */}
           <form onSubmit={handleEmailSignIn} className="space-y-3">
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
@@ -112,14 +110,12 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Разделитель */}
           <div className="relative flex py-2 items-center">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="flex-shrink mx-4 text-gray-400 text-sm">или</span>
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          {/* Кнопка Passkey */}
           <Button
             onClick={handlePasskeySignIn}
             variant="outline"
