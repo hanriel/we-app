@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WE — мы вдвоём  
 
-## Getting Started
+**Совместное пространство для пар и семей: списки, желания, покупки, поездки и привычки**
 
-First, run the development server:
+**WE** — это готовый онлайн-сервис, который помогает вам и вашим близким быть на одной волне.  
+Создавайте общие списки, планируйте покупки и поездки, отслеживайте привычки — всё в одном месте, доступном с любого устройства.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+> 🚀 **Готовый сервис доступен по адресу:** [https://we.hanriel.ru](https://we.hanriel.ru)  
+> Зарегистрируйтесь, создайте свою семью и приглашайте близких — это бесплатно!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Возможности
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **👨‍👩‍👧‍👦 Семьи и совместный доступ**  
+  Вы можете создать «семью» и добавить в неё своих партнёров, детей или друзей.  
+  Все списки и заметки автоматически становятся общими для членов семьи.
 
-## Learn More
+- **🛒 Список покупок**  
+  Добавляйте товары, отмечайте купленное, фильтруйте по категориям и статусу.  
+  Удобно для походов в магазин и планирования запасов.
 
-To learn more about Next.js, take a look at the following resources:
+- **🎁 Список желаний**  
+  Собирайте идеи подарков, добавляйте ссылки, цены и приоритеты.  
+  Больше никаких «а что тебе подарить?» — всё уже в списке.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **📅 Планирование поездок**  
+  Укажите даты, бюджет, составьте чек-лист вещей.  
+  Всё, что нужно для совместного отпуска или выходных.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **⏰ Напоминания**  
+  Личные и общие напоминания с повторениями — не пропустите важные даты и события.
 
-## Deploy on Vercel
+- **🔄 Привычки**  
+  Трекер привычек: отмечайте ежедневные действия, следите за прогрессом вместе.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **🔐 Безопасный вход**  
+  Используйте **Passkey (WebAuthn)** — вход по Face ID, Touch ID или PIN-коду.  
+  Можно зарегистрировать несколько устройств (телефон, планшет, ноутбук).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **📱 PWA-приложение**  
+  Установите на главный экран смартфона — работает как нативное приложение, даже без интернета.
+
+---
+
+## 🛠 Технологии, на которых построен сервис
+
+- **Next.js 16** (App Router, React Server Components)
+- **TypeScript**
+- **Tailwind CSS** + **shadcn/ui**
+- **MariaDB** (хранилище данных)
+- **Prisma** (ORM)
+- **Auth.js** (аутентификация: Passkey, Email)
+- **PWA** (Service Worker через Serwist)
+- **Nginx** + **PM2** (хостинг)
+
+---
+
+## 🧑‍💻 Для разработчиков
+
+Исходный код **WE** открыт — мы приглашаем вас к изучению, обсуждению и доработкам.  
+Если вы хотите предложить новую функцию, исправить ошибку или просто разобраться, как устроено приложение, — добро пожаловать!
+
+### 📥 Установка для разработки
+
+1. Клонируйте репозиторий:
+
+   ```bash
+   git clone https://github.com/ваш-аккаунт/we-app.git
+   cd we-app
+   ```
+
+2. Установите зависимости:
+
+    ```bash
+    npm install
+    ```
+
+3. Создайте файл .env.local и настройте подключение к локальной MariaDB (см. пример).
+
+4. Выполните миграции:
+
+    ```bash
+    npx prisma migrate dev --name init
+    ```
+
+5. Запустите в режиме разработки:
+
+    ```bash
+    npm run dev
+    ```
+
+Подробная документация по сборке и деплою доступна в CONTRIBUTING.md (скоро).
+
+## 🤝 Как помочь проекту
+
+- Сообщайте об ошибках через Issues.
+- Предлагайте идеи и улучшения.
+- Присылайте Pull Requests с новыми функциями или исправлениями.
+
+Пожалуйста, ознакомьтесь с нашим кодексом поведения перед началом работы.
+
+## ⚖️ Лицензия и условия использования
+
+Исходный код WE распространяется под лицензией MIT — это означает, что вы можете:
+
+- Свободно изучать, изменять и распространять код.
+- Использовать его в своих некоммерческих и коммерческих проектах.
+
+Однако, мы просим вас уважать наш труд и не использовать код для создания публичного сервиса, который является полной копией WE, без нашего явного разрешения.
+Официальный сервис предоставляется только по адресу <https://we.hanriel.ru>. Если вы хотите запустить свой независимый экземпляр для личных или внутренних целей, свяжитесь с нами — мы обсудим это.
+
+Мы открыты к сотрудничеству и всегда рады новым участникам, которые хотят развивать проект вместе с нами, а не создавать «клоны».
+
+## ✍️ Авторы
+
+Hanriel — основатель, разработчик, дизайнер.
+
+[GitHub](https://github.com/hanriel) · [Telegram](https://t.me/Hanriel)
+
+## 🌟 Благодарности
+
+Вдохновение и инструменты:
+
+- [Next.js](https://nextjs.org/)
+- [Auth.js](https://authjs.dev/)
+- [Prisma](https://prisma.io/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Serwist](https://serwist.pages.dev/)
+
+---
+
+**Создавайте общее будущее с WE — вместе проще, веселее и надёжнее! 💙**
