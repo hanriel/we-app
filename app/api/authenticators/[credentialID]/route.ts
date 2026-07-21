@@ -2,9 +2,9 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(
+export const DELETE = auth(async function DELETE(
   req:NextRequest,
-  { params }: { params: { credentialID: string } }
+  { params }: { params: Promise<{ credentialID: string }> }
 ){
   const session = await auth();
   if (!session?.user) {
@@ -12,7 +12,7 @@ export async function DELETE(
   }
 
   const userId = session.user.id;
-  const credentialID = params.credentialID;
+  const { credentialID } = await params;
 
   try {
     // Проверяем, что ключ принадлежит текущему пользователю
@@ -47,4 +47,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-};
+});
