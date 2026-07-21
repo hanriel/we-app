@@ -1,14 +1,18 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const DELETE = auth(async function DELETE(req, { params }: { params: { credentialID: string } }) {
-  if (!req.auth) {
+export async function DELETE(
+  req:NextRequest,
+  { params }: { params: { credentialID: string } }
+){
+  const session = await auth();
+  if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = req.auth.user?.id;
-  const { credentialID } = params;
+  const userId = session.user.id;
+  const credentialID = params.credentialID;
 
   try {
     // Проверяем, что ключ принадлежит текущему пользователю
@@ -43,4 +47,4 @@ export const DELETE = auth(async function DELETE(req, { params }: { params: { cr
       { status: 500 }
     );
   }
-});
+};
