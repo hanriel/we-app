@@ -16,8 +16,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Отправка беспарольной ссылки (Magic Link)
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
