@@ -20,6 +20,7 @@ export default async function ShoppingPage() {
   const itemsSerialized = items.map((item) => ({
     ...item,
     price: item.price ? Number(item.price) : null,
+    quantity: item.quantity ?? 1,
   }));
 
   return (
