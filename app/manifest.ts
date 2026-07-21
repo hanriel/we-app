@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Мы вдвоём',
+    name: 'WE — мы вдвоём',
     short_name: 'МЫ',
-    description: 'Приложение для пар со списком задач и вишлистом',
+    description: 'Приложение для пар и семей: списки дел, вишлист, планирование поездок и покупок',
     start_url: '/',
     display: 'standalone',
     background_color: '#EAF8FF',

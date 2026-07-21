@@ -17,8 +17,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WE",
-  description: "Мы - Семейный трекер, повзоляющий совместно отсллеживать дела, планировать поездки и покупки",
+  title: "WE — приложение для пар и семей: списки задач, вишлист, планирование поездок и покупок",
+  description: "WE (МЫ) — уютное PWA-приложение для двоих и всей семьи. Совместно ведите списки дел и покупок, собирайте вишлисты, планируйте поездки и воплощайте мечты. Работает офлайн, всегда под рукой.",
+  keywords: "приложение для пар, семейный трекер, общий список задач, вишлист, wishlist для пар, совместные покупки, планирование поездок, we, мы вдвоём, pwa",
+  openGraph: {
+    title: "WE — приложение для пар и семей: общие списки, вишлист и планы",
+    description: "Создавайте списки дел и покупок, вишлисты и планы поездок вместе с близкими. Тёплое приложение для двоих и всей семьи.",
+    url: "https://we.hanriel.ru",
+    type: "website",
+    siteName: "WE — мы вдвоём",
+    locale: "ru_RU",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    startupImage: "/icons/logo-transparent.png",
+    title: "WE",
+  },
+  
 };
 
 export default function RootLayout({
