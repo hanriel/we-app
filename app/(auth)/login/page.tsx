@@ -18,6 +18,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
+  const pjson = require("@/package.json");
+
   const handleEmailSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,7 +80,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader>
           <CardTitle className="place-self-center">
@@ -140,7 +142,10 @@ export default function LoginPage() {
           {error && <p className="text-sm text-red-600 text-center font-medium">{error}</p>}
 
         </CardContent>
+        
       </Card>
+      <p className="text-xs text-muted-foreground pt-6">ver {pjson.version}</p>
     </div>
+    
   );
 }

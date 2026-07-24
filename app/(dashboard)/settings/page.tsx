@@ -36,6 +36,9 @@ export default function SettingsPage() {
   const [devices, setDevices] = useState<Authenticator[]>([]);
   const [devicesLoading, setDevicesLoading] = useState(true);
 
+  
+  const pjson = require("@/package.json");
+
   // Загрузка устройств
   useEffect(() => {
     if (status === "authenticated") {
@@ -214,6 +217,7 @@ export default function SettingsPage() {
             <LogOut className="h-4 w-4" />
             Выйти
         </Button>
+        <p className="text-xs text-muted-foreground text-center">version {pjson.version}</p>
       </div>
     </div>
   );
