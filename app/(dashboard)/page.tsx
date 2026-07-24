@@ -30,7 +30,7 @@ export default async function DashboardPage() {
       icon: Gift,
       href: "/wishes",
       color: "text-pink-500",
-      colorStart: "from-pink-400",
+      colorStart: "from-pink-100",
       colorEnd: "to-pink-200",
     },
     {
@@ -39,16 +39,16 @@ export default async function DashboardPage() {
       icon: Bell,
       href: "/reminders",
       color: "text-yellow-500",
-      colorStart: "from-yellow-400",
+      colorStart: "from-yellow-100",
       colorEnd: "to-yellow-200",
     },
     {
-      title: "Покупки для дома",
+      title: "Список покупок",
       description: "Что нужно купить",
       icon: ShoppingCart,
       href: "/shopping",
       color: "text-blue-500",
-      colorStart: "from-blue-400",
+      colorStart: "from-blue-100",
       colorEnd: "to-blue-200",
     },
     {
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
       icon: Plane,
       href: "/trips",
       color: "text-green-500",
-      colorStart: "from-green-400",
+      colorStart: "from-green-100",
       colorEnd: "to-green-200",
     },
     {
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
       icon: CheckSquare,
       href: "/habits",
       color: "text-purple-500",
-      colorStart: "from-purple-400",
+      colorStart: "from-purple-100",
       colorEnd: "to-purple-200",
     },
     {
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
       icon: Settings,
       href: "/settings",
       color: "text-gray-500",
-      colorStart: "from-gray-400",
+      colorStart: "from-gray-100",
       colorEnd: "to-gray-200",
     },
   ];
@@ -86,7 +86,7 @@ export default async function DashboardPage() {
         {/* Header */}
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Привет, Даня 👋</h1>
+            <h1 className="text-3xl font-bold">Привет, {session.user.name} 👋</h1>
           </div>
         </div>
 
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
               <Link key={section.href} href={section.href}>
                 <Card className={`h-full transition-shadow aspect-square sm:aspect-auto bg-linear-to-t ${section.colorStart} ${section.colorEnd} hover:shadow-lg cursor-pointer`}>
                   <CardHeader className="flex flex-col gap-2">
-                    <div className={`rounded-lg p-3 text-${section.color}-500`}>
+                    <div className={`rounded-lg p-3 ${section.color}`}>
                       <Icon className="h-6 w-6" />
                     </div>
                     <div>
