@@ -9,12 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from 'next/image'
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleEmailSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -64,6 +66,8 @@ export default function LoginPage() {
         } else {
           setError("Не удалось войти с Passkey. Убедитесь, что вы зарегистрированы.");
         }
+      } else if (result?.ok) {
+        router.push("/");
       }
     } catch (err) {
       setError("Ошибка при взаимодействии с ключом безопасности.");
