@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: WeApp API
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /wishes:
+    get:
+      summary: Список желаний
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Wish" }
+    post:
+      summary: Создать желание
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WishCreate" }
+      responses:
+        "201": { description: Создано }
+        "400": { description: Ошибка валидации }
+  /wishes/{id}:
+    patch:
+      summary: Обновить желание (в т.ч. отметить купленным)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WishUpdate" }
+      responses:
+        "200": { description: OK }
+        "404": { description: Не найдено }
+  /reminders:
+    get:
+      summary: Список напоминаний
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Reminder" }
+    post:
+      summary: Создать напоминание
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReminderCreate" }
+      responses:
+        "201": { description: Создано }
+  /shopping:
+    get:
+      summary: Список покупок
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShoppingItem" }
+    post:
+      summary: Добавить покупку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShoppingItemCreate" }
+      responses:
+        "201": { description: Создано }
+  /trips:
+    get:
+      summary: Список поездок
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Trip" }
+    post:
+      summary: Создать поездку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TripCreate" }
+      responses:
+        "201": { description: Создано }
+components:
+  schemas:
+    Wish:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        price: { type: string, nullable: true }
+        isPurchased: { type: boolean }
+        createdAt: { type: string, format: date-time }
+      required: [id, title, isPurchased]
+    WishCreate:
+      type: object
+      properties:
+        title: { type: string, maxLength: 255 }
+        description: { type: string }
+        link: { type: string, format: uri }
+        price: { type: number }
+        tagIds: { type: array, items: { type: string } }
+      required: [title]
+    WishUpdate:
+      type: object
+      properties:
+        isPurchased: { type: boolean }
+    Reminder:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        dueDate: { type: string, format: date-time, nullable: true }
+        isCompleted: { type: boolean }
+      required: [id, title, isCompleted]
+    ReminderCreate:
+      type: object
+      properties:
+        title: { type: string, maxLength: 255 }
+        description: { type: string }
+        dueDate: { type: string, format: date-time }
+        isRecurring: { type: boolean }
+        recurringRule: { type: string, enum: [daily, weekly, monthly] }
+      required: [title]
+    ShoppingItem:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        category: { type: string, nullable: true }
+        quantity: { type: integer }
+        price: { type: string, nullable: true }
+        isPurchased: { type: boolean }
+      required: [id, name, isPurchased]
+    ShoppingItemCreate:
+      type: object
+      properties:
+        name: { type: string, maxLength: 255 }
+        category: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        price: { type: number }
+      required: [name]
+    Trip:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        destination: { type: string, nullable: true }
+        startDate: { type: string, format: date, nullable: true }
+        endDate: { type: string, format: date, nullable: true }
+        budget: { type: string, nullable: true }
+      required: [id, title]
+    TripCreate:
+      type: object
+      properties:
+        title: { type: string, maxLength: 255 }
+        destination: { type: string }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        budget: { type: number }
+      required: [title]
