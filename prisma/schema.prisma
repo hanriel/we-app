@@ -40,7 +40,7 @@ model User {
   notes         Note[]
   movieItems    MovieItem[]
   sharedAccess  SharedAccess[] // где этот пользователь выступает как участник совместного доступа
-
+  tripsMemberships TripParticipant[]
 
   @@map("users")
 }
@@ -130,6 +130,7 @@ model Wish {
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  tags        WishTag[]
 
   @@map("wishes")
 }
@@ -190,6 +191,7 @@ model Trip {
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  participants TripParticipant[]
 
   // Можно добавить чек-лист вещей отдельной моделью, но пока оставим в notes
 
@@ -298,4 +300,33 @@ model MovieItem {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("movie_items")
+}
+
+model Tag {
+  id     String    @id @default(cuid())
+  name   String    @db.VarChar(50) @unique
+  wishes WishTag[]
+
+  @@map("tags")
+}
+
+model WishTag {
+  wish   Wish @relation(fields: [wishId], references: [id], onDelete: Cascade)
+  wishId String @map("wish_id")
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  tagId  String @map("tag_id")
+
+  @@id([wishId, tagId])
+  @@map("wish_tags")
+}
+
+model TripParticipant {
+  trip   Trip  @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId String @map("trip_id")
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+  role   String @default("viewer") @db.VarChar(20)
+
+  @@id([tripId, userId])
+  @@map("trip_participants")
 }
