@@ -163,34 +163,70 @@ export type PostRemindersResponses = {
     201: unknown;
 };
 
-export type GetShoppingData = {
+export type ListShoppingItemsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/shopping';
 };
 
-export type GetShoppingResponses = {
+export type ListShoppingItemsResponses = {
     /**
      * OK
      */
     200: Array<ShoppingItem>;
 };
 
-export type GetShoppingResponse = GetShoppingResponses[keyof GetShoppingResponses];
+export type ListShoppingItemsResponse = ListShoppingItemsResponses[keyof ListShoppingItemsResponses];
 
-export type PostShoppingData = {
+export type CreateShoppingItemData = {
     body: ShoppingItemCreate;
     path?: never;
     query?: never;
     url: '/shopping';
 };
 
-export type PostShoppingResponses = {
+export type CreateShoppingItemResponses = {
     /**
      * Создано
      */
     201: unknown;
+};
+
+export type DeleteShoppingItemData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/shopping/{id}';
+};
+
+export type DeleteShoppingItemResponses = {
+    /**
+     * Удалено
+     */
+    204: void;
+};
+
+export type DeleteShoppingItemResponse = DeleteShoppingItemResponses[keyof DeleteShoppingItemResponses];
+
+export type UpdateShoppingItemData = {
+    body: {
+        isPurchased?: boolean;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/shopping/{id}';
+};
+
+export type UpdateShoppingItemResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
 };
 
 export type GetTripsData = {

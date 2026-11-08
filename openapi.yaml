@@ -64,6 +64,7 @@ paths:
         "201": { description: Создано }
   /shopping:
     get:
+      operationId: listShoppingItems
       summary: Список покупок
       responses:
         "200":
@@ -74,6 +75,7 @@ paths:
                 type: array
                 items: { $ref: "#/components/schemas/ShoppingItem" }
     post:
+      operationId: createShoppingItem
       summary: Добавить покупку
       requestBody:
         required: true
@@ -82,6 +84,33 @@ paths:
             schema: { $ref: "#/components/schemas/ShoppingItemCreate" }
       responses:
         "201": { description: Создано }
+  /shopping/{id}:
+    patch:
+      operationId: updateShoppingItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isPurchased: { type: boolean }
+      responses:
+        "200": { description: OK }
+    delete:
+      operationId: deleteShoppingItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Удалено }
   /trips:
     get:
       summary: Список поездок

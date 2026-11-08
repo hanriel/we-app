@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetRemindersData, GetRemindersResponses, GetShoppingData, GetShoppingResponses, GetTripsData, GetTripsResponses, GetWishesData, GetWishesResponses, PatchWishesByIdData, PatchWishesByIdErrors, PatchWishesByIdResponses, PostRemindersData, PostRemindersResponses, PostShoppingData, PostShoppingResponses, PostTripsData, PostTripsResponses, PostWishesData, PostWishesErrors, PostWishesResponses } from './types.gen';
+import type { CreateShoppingItemData, CreateShoppingItemResponses, DeleteShoppingItemData, DeleteShoppingItemResponses, GetRemindersData, GetRemindersResponses, GetTripsData, GetTripsResponses, GetWishesData, GetWishesResponses, ListShoppingItemsData, ListShoppingItemsResponses, PatchWishesByIdData, PatchWishesByIdErrors, PatchWishesByIdResponses, PostRemindersData, PostRemindersResponses, PostTripsData, PostTripsResponses, PostWishesData, PostWishesErrors, PostWishesResponses, UpdateShoppingItemData, UpdateShoppingItemResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -67,13 +67,24 @@ export const postReminders = <ThrowOnError extends boolean = false>(options: Opt
 /**
  * Список покупок
  */
-export const getShopping = <ThrowOnError extends boolean = false>(options?: Options<GetShoppingData, ThrowOnError>) => (options?.client ?? client).get<GetShoppingResponses, unknown, ThrowOnError>({ url: '/shopping', ...options });
+export const listShoppingItems = <ThrowOnError extends boolean = false>(options?: Options<ListShoppingItemsData, ThrowOnError>) => (options?.client ?? client).get<ListShoppingItemsResponses, unknown, ThrowOnError>({ url: '/shopping', ...options });
 
 /**
  * Добавить покупку
  */
-export const postShopping = <ThrowOnError extends boolean = false>(options: Options<PostShoppingData, ThrowOnError>) => (options.client ?? client).post<PostShoppingResponses, unknown, ThrowOnError>({
+export const createShoppingItem = <ThrowOnError extends boolean = false>(options: Options<CreateShoppingItemData, ThrowOnError>) => (options.client ?? client).post<CreateShoppingItemResponses, unknown, ThrowOnError>({
     url: '/shopping',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+export const deleteShoppingItem = <ThrowOnError extends boolean = false>(options: Options<DeleteShoppingItemData, ThrowOnError>) => (options.client ?? client).delete<DeleteShoppingItemResponses, unknown, ThrowOnError>({ url: '/shopping/{id}', ...options });
+
+export const updateShoppingItem = <ThrowOnError extends boolean = false>(options: Options<UpdateShoppingItemData, ThrowOnError>) => (options.client ?? client).patch<UpdateShoppingItemResponses, unknown, ThrowOnError>({
+    url: '/shopping/{id}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
