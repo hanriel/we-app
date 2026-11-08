@@ -9,6 +9,7 @@ const adapter = new PrismaMariaDb({
   database: process.env.DB_NAME,
   connectTimeout: 5_000,
   idleTimeout: 300,
+  allowPublicKeyRetrieval: true,
 });
 
 const globalForPrisma = global as unknown as {

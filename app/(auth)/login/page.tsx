@@ -27,7 +27,6 @@ export default function LoginPage() {
     setMessage("");
 
     try {
-      // Имя провайдера в Auth.js v5 обычно "resend" или "nodemailer"
       const result = await emailSignIn("resend", {
         email,
         redirectTo: "/",
