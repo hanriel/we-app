@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useOptimistic } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,82 +22,73 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Trash2, Plus, Filter } from "lucide-react";
-import { createShoppingItem, togglePurchased, deleteShoppingItem } from "./actions";
+import { togglePurchased } from "./actions";
 
-type ShoppingItem = {
-  id: string;
-  name: string;
-  category: string | null;
-  quantity: number;
-  price: number | null;
-  isPurchased: boolean;
-  purchasedAt: Date | null;
-  createdAt: Date;
-};
+import {
+  listShoppingItems,
+  createShoppingItem,
+  updateShoppingItem,
+  deleteShoppingItem,
+  type ShoppingItem,
+} from "@/lib/api-generated";
 
 type FilterType = "all" | "active" | "purchased";
 
 export default function ShoppingListClient({ items: initialItems }: { items: ShoppingItem[] }) {
-  const router = useRouter();
+  const qc = useQueryClient();
   const [filter, setFilter] = useState<FilterType>("all");
   const [isAdding, setIsAdding] = useState(false);
+
+  const { data: items, isLoading } = useQuery({
+    queryKey: ["shopping"],
+    queryFn: async () => (await listShoppingItems()).data ?? [],
+  });
+
+  // Оптимистичное добавление: элемент сразу виден, потом подтверждается инвалидацией
   const [optimisticItems, addOptimisticItem] = useOptimistic(
-    initialItems,
-    (state, newItem: ShoppingItem) => [...state, newItem]
+    items ?? [],
+    (state, newItem: ShoppingItem) => [...state, newItem],
   );
 
-  // Форма добавления
+  const create = useMutation({
+    mutationFn: (input: { name: string; category?: string; quantity: number }) =>
+      createShoppingItem({ body: input }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shopping"] }),
+  });
+
+  const toggle = useMutation({
+    mutationFn: ({ id, isPurchased }: { id: string; isPurchased: boolean }) =>
+      updateShoppingItem({ path: { id }, body: { isPurchased } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shopping"] }),
+  });
+
+  const remove = useMutation({
+    mutationFn: (id: string) => deleteShoppingItem({ path: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["shopping"] }),
+  });
+
   const handleAdd = async (formData: FormData) => {
     setIsAdding(true);
     const name = formData.get("name") as string;
     const category = formData.get("category") as string;
     const quantity = Number(formData.get("quantity")) || 1;
 
-    // Оптимистично добавляем
-    const tempItem: ShoppingItem = {
+    addOptimisticItem({
       id: `temp-${Date.now()}`,
       name,
       category: category || null,
       quantity,
       price: null,
       isPurchased: false,
-      purchasedAt: null,
-      createdAt: new Date(),
-    };
-    addOptimisticItem(tempItem);
+    } as ShoppingItem);
 
     try {
-      await createShoppingItem(formData);
-      router.refresh();
-    } catch (error) {
-      console.error(error);
+      await create.mutateAsync({ name, category: category || undefined, quantity });
     } finally {
       setIsAdding(false);
     }
   };
 
-  // Переключение статуса
-  const handleToggle = async (id: string) => {
-    try {
-      await togglePurchased(id);
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Удаление
-  const handleDelete = async (id: string) => {
-    if (!confirm("Удалить позицию?")) return;
-    try {
-      await deleteShoppingItem(id);
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Фильтрация
   const filteredItems = optimisticItems.filter((item) => {
     if (filter === "active") return !item.isPurchased;
     if (filter === "purchased") return item.isPurchased;
@@ -105,6 +97,7 @@ export default function ShoppingListClient({ items: initialItems }: { items: Sho
 
   const activeCount = optimisticItems.filter((i) => !i.isPurchased).length;
   const totalCount = optimisticItems.length;
+
 
   return (
     <div className="min-h-screen">
@@ -176,7 +169,9 @@ export default function ShoppingListClient({ items: initialItems }: { items: Sho
 
         {/* Список */}
         <div className="space-y-2">
-          {filteredItems.length === 0 ? (
+          {isLoading ? (
+            <p className="text-center text-gray-500 py-8">Загрузка…</p>
+          ) : filteredItems.length === 0 ? (
             <p className="text-center text-gray-500 py-8">Список пуст</p>
           ) : (
             filteredItems.map((item) => (
@@ -185,7 +180,9 @@ export default function ShoppingListClient({ items: initialItems }: { items: Sho
                   <div className="flex items-center gap-3 flex-1">
                     <Checkbox
                       checked={item.isPurchased}
-                      onCheckedChange={() => handleToggle(item.id)}
+                      onCheckedChange={() =>
+                        toggle.mutate({ id: item.id, isPurchased: !item.isPurchased })
+                      }
                     />
                     <div>
                       <p className={`font-medium ${item.isPurchased ? "line-through" : ""}`}>
@@ -201,7 +198,7 @@ export default function ShoppingListClient({ items: initialItems }: { items: Sho
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => remove.mutate(item.id)}
                     className="text-red-500 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
